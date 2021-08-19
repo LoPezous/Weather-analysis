@@ -1,0 +1,31 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+
+x = input('choose a csv file: ') #fb441e62df2d58994928907a91895ec62c2c42e6cd075c2700843b89.csv
+y = input('choose a year to compare: ') #2015
+
+
+df = pd.read_csv(str(x))
+df = df.sort_values(by=['Date'])
+
+
+df['Data_Value'] = df['Data_Value'] * 0.1
+df['Year'] = df['Date'].apply(lambda x: x[:4])
+df['day'] = df['Date'].apply(lambda x: x[5:])
+_0514 = df[(df['Year'] != str(y))]
+_15 = df[df['Year'] == str(y)]
+
+
+max_0514 = _0514.groupby('day').agg({'Data_Value':np.max})
+min_0514 = _0514.groupby('day').agg({'Data_Value':np.min})
+max_15 = _15.groupby('day').agg({'Data_Value':np.max})
+min_15 = _15.groupby('day').agg({'Data_Value':np.min})
+max_all = pd.merge(max_0514.reset_index(), max_15.reset_index(), on = 'day')
+max_all.columns = ['day', '2005-2014','2015']
+
+min_all = pd.merge(min_0514.reset_index(), min_15.reset_index(), on = 'day')
+min_all.columns = ['day', '2005-2014','2015']
+
+max_record_15 = max_all[max_all['2015'] > max_all['2005-2014']]
+min_record_15 = min_all[min_all['2015'] < min_all['2005-2014']]
